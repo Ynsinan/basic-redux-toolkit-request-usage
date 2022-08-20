@@ -1,56 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useEffect } from "react";
+import "./App.css";
+import {
+  fetchData,
+  getCharacters,
+  getSelectedCharacter,
+  setSelectedCharacter,
+  loadingSelector,
+} from "./slice/store/apiSlice";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { CharacterTypes } from "global";
 
 function App() {
+  const characters: CharacterTypes[] = useAppSelector(getCharacters);
+  const loading: boolean = useAppSelector(loadingSelector);
+  const selectedCharacter: CharacterTypes[] =
+    useAppSelector(getSelectedCharacter);
+  const dispatch = useAppDispatch();
+
+  const setSelect = (character: CharacterTypes) => {
+    console.log(selectedCharacter);
+
+    dispatch(setSelectedCharacter(character));
+  };
+  useEffect(() => {
+    dispatch(fetchData());
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div className="App" style={{ display: "flex", flexDirection: "column" }}>
+      <div
+        className="wrapper"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          width: "80%",
+          margin: "0 auto",
+          flexWrap: "wrap",
+        }}
+      >
+        <h2>List of Characters</h2>
+        {loading ? (
+          <div>
+            <h1>Loading...</h1>
+          </div>
+        ) : (
+          characters &&
+          characters.map((character, index) => (
+            <div style={{ border: "1px solid black" }} key={index}>
+              <p>{character.name}</p>
+              <p>{character.gender}</p>
+              <button onClick={() => setSelect(character)}>select</button>
+            </div>
+          ))
+        )}
+        {selectedCharacter &&
+          selectedCharacter.map((character, index) => (
+            <div key={index}>
+              <p>{character.name}</p>
+              <p>{character.gender}</p>
+            </div>
+          ))}
+      </div>
     </div>
   );
 }
