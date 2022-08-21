@@ -31,6 +31,9 @@ export const CharacterSlice = createSlice({
   initialState,
   reducers: {
     setSelectedCharacter: (state, action) => {
+      console.log(action.payload);
+      console.log(state.selectedCharacter);
+
       return {
         ...state,
         selectedCharacter: state.selectedCharacter.find(
@@ -42,6 +45,14 @@ export const CharacterSlice = createSlice({
                 : selecTedcharacter
             )
           : [...state.selectedCharacter, action.payload],
+      };
+    },
+    unSelectCharacter: (state, action) => {
+      return {
+        ...state,
+        selectedCharacter: state.selectedCharacter.filter(
+          (character) => character.id !== action.payload.id
+        ),
       };
     },
   },
@@ -67,5 +78,6 @@ export const getCharacters = (state: RootState) => state.character.characters;
 export const getSelectedCharacter = (state: RootState) =>
   state.character.selectedCharacter;
 
-export const { setSelectedCharacter } = CharacterSlice.actions;
+export const { setSelectedCharacter, unSelectCharacter } =
+  CharacterSlice.actions;
 export default CharacterSlice.reducer;

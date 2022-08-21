@@ -6,6 +6,7 @@ import {
   getSelectedCharacter,
   setSelectedCharacter,
   loadingSelector,
+  unSelectCharacter,
 } from "./slice/store/apiSlice";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
 import { CharacterTypes } from "global";
@@ -18,14 +19,20 @@ function App() {
   const dispatch = useAppDispatch();
 
   const setSelect = (character: CharacterTypes) => {
-    console.log(selectedCharacter);
-
     dispatch(setSelectedCharacter(character));
+  };
+
+  const unSelect = (character: CharacterTypes) => {
+    dispatch(unSelectCharacter(character));
+    console.log(selectedCharacter);
   };
   useEffect(() => {
     dispatch(fetchData());
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log(selectedCharacter);
+  }, [selectedCharacter]);
   return (
     <div className="App" style={{ display: "flex", flexDirection: "column" }}>
       <div
@@ -58,6 +65,7 @@ function App() {
             <div key={index}>
               <p>{character.name}</p>
               <p>{character.gender}</p>
+              <button onClick={() => unSelect(character)}>Unselect</button>
             </div>
           ))}
       </div>
