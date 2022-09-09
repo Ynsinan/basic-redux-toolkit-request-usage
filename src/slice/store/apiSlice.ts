@@ -3,14 +3,12 @@ import { dataFetch } from "src/api";
 import { RootState } from "../../app/store";
 
 export interface ApiState {
-  selectedCharacter: any[];
-  characters: any;
+  sportPrograms: any;
   loading: boolean;
   error: string | null;
 }
 const initialState: ApiState = {
-  selectedCharacter: [],
-  characters: [],
+  sportPrograms: [],
   loading: true,
   error: null,
 };
@@ -18,44 +16,17 @@ const initialState: ApiState = {
 export const fetchData = createAsyncThunk("api/getCharacters", async () => {
   try {
     const response = await dataFetch.CharactersGET();
-    console.log(response);
 
-    return response.results;
+    return response;
   } catch (error) {
     return error;
   }
 });
 
-export const CharacterSlice = createSlice({
-  name: "Character",
+export const sportProgramSlice = createSlice({
+  name: "sportsPrograms",
   initialState,
-  reducers: {
-    setSelectedCharacter: (state, action) => {
-      console.log(action.payload);
-      console.log(state.selectedCharacter);
-
-      return {
-        ...state,
-        selectedCharacter: state.selectedCharacter.find(
-          (character) => character.id === action.payload.id
-        )
-          ? state.selectedCharacter.map((selecTedcharacter) =>
-              selecTedcharacter === action.payload
-                ? action.payload
-                : selecTedcharacter
-            )
-          : [...state.selectedCharacter, action.payload],
-      };
-    },
-    unSelectCharacter: (state, action) => {
-      return {
-        ...state,
-        selectedCharacter: state.selectedCharacter.filter(
-          (character) => character.id !== action.payload.id
-        ),
-      };
-    },
-  },
+  reducers: {},
 
   extraReducers: (builder) => {
     builder.addCase(fetchData.pending, (state) => {
@@ -63,7 +34,7 @@ export const CharacterSlice = createSlice({
     });
     builder.addCase(fetchData.fulfilled, (state, action) => {
       state.loading = false;
-      state.characters = action.payload;
+      state.sportPrograms = action.payload;
       state.error = "";
     });
     builder.addCase(fetchData.rejected, (state, action) => {
@@ -73,11 +44,7 @@ export const CharacterSlice = createSlice({
   },
 });
 
-export const loadingSelector = (state: RootState) => state.character.loading;
-export const getCharacters = (state: RootState) => state.character.characters;
-export const getSelectedCharacter = (state: RootState) =>
-  state.character.selectedCharacter;
+export const getSportProgram = (state: RootState) =>
+  state.sportProgram.sportPrograms;
 
-export const { setSelectedCharacter, unSelectCharacter } =
-  CharacterSlice.actions;
-export default CharacterSlice.reducer;
+export default sportProgramSlice.reducer;

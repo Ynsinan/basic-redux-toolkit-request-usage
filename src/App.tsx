@@ -1,74 +1,47 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import {
-  fetchData,
-  getCharacters,
-  getSelectedCharacter,
-  setSelectedCharacter,
-  loadingSelector,
-  unSelectCharacter,
-} from "./slice/store/apiSlice";
+import { fetchData, getSportProgram } from "./slice/store/apiSlice";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { CharacterTypes } from "global";
+import { RootObject } from "global";
 
 function App() {
-  const characters: CharacterTypes[] = useAppSelector(getCharacters);
-  const loading: boolean = useAppSelector(loadingSelector);
-  const selectedCharacter: CharacterTypes[] =
-    useAppSelector(getSelectedCharacter);
+  const [isActive, setIsActive] = useState<number>();
+  const sportProgram: RootObject = useAppSelector(getSportProgram);
   const dispatch = useAppDispatch();
 
-  const setSelect = (character: CharacterTypes) => {
-    dispatch(setSelectedCharacter(character));
-  };
-
-  const unSelect = (character: CharacterTypes) => {
-    dispatch(unSelectCharacter(character));
-    console.log(selectedCharacter);
-  };
   useEffect(() => {
     dispatch(fetchData());
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log(selectedCharacter);
-  }, [selectedCharacter]);
+  const toggle = (index: any) => {
+    if (isActive === index) {
+      return setIsActive(undefined);
+    }
+    setIsActive(index);
+  };
   return (
-    <div className="App" style={{ display: "flex", flexDirection: "column" }}>
-      <div
-        className="wrapper"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          width: "80%",
-          margin: "0 auto",
-          flexWrap: "wrap",
-        }}
-      >
-        <h2>List of Characters</h2>
-        {loading ? (
-          <div>
-            <h1>Loading...</h1>
+    <div className="App">
+      {sportProgram &&
+        sportProgram?.data?.cf?.map((item, index) => (
+          <div className="accordion-item" key={index}>
+            <div
+              className="accordion-item-header"
+              onClick={() => toggle(index)}
+              key={index}
+            >
+              {item.cgn}
+            </div>
+            {isActive === index ? (
+              <div className="accordion-item-body">
+                {item.lf.map((item, index) => (
+                  <div key={index}>
+                    {item.ln} / {item.total}
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
-        ) : (
-          characters &&
-          characters.map((character, index) => (
-            <div style={{ border: "1px solid black" }} key={index}>
-              <p>{character.name}</p>
-              <p>{character.gender}</p>
-              <button onClick={() => setSelect(character)}>select</button>
-            </div>
-          ))
-        )}
-        {selectedCharacter &&
-          selectedCharacter.map((character, index) => (
-            <div key={index}>
-              <p>{character.name}</p>
-              <p>{character.gender}</p>
-              <button onClick={() => unSelect(character)}>Unselect</button>
-            </div>
-          ))}
-      </div>
+        ))}
     </div>
   );
 }
